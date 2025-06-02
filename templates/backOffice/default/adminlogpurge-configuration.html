@@ -1,0 +1,95 @@
+{extends file="admin-layout.tpl"}
+
+{block name="after-bootstrap-css"}
+    {stylesheets file='assets/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css'}
+        <link rel="stylesheet" href="{$asset_url}">
+    {/stylesheets}
+{/block}
+
+{block name="no-return-functions"}
+    {$admin_current_location = 'modules'}
+{/block}
+
+{block name="page-title"}{intl l='Modules'}{/block}
+
+{block name="check-resource"}admin.module{/block}
+{block name="check-access"}view{/block}
+
+{block name="main-content"}
+<div id="wrapper" class="container">
+
+    {if $general_error|default:null}
+        <div class="alert alert-danger">
+            {$general_error}
+        </div>
+    {/if}
+
+    {flash type='remove-logs-result'}
+        <div class="alert alert-success">
+            {$MESSAGE}
+        </div>
+    {/flash}
+
+    <div class="alert alert-info">
+        {intl l='<b>Warning :</b> this operation may take a while for huge databases. You should do it in several times. Please wait until success or error message is displayed.' d='adminlogpurge.bo.default'}
+    </div>
+
+    <div class="general-block-decorator">
+        <div class="row">
+            <div class="col-md-12 title title-without-tabs">
+                {intl l="Remove admin logs" d='adminlogpurge.bo.default'}
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="row">
+                <div class="col-md-6">
+
+                    {form name='adminlogpurge_form'}
+                        <form action="{url path='admin/module/AdminLogPurge/remove'}" method="post">
+
+                            {form_hidden_fields form=$form}
+                            {render_form_field form=$form field="success_url" value={url path="/admin/module/AdminLogPurge"}}
+
+                            <!-- Start interval date -->
+                            <div class="form-group">
+                                {form_field form=$form field='start_date'}
+                                    <label for="startDate">{$label}</label>
+                                    <div class="input-group">
+                                        <input type="text" name="{$name}" value="{'-1 week'|date_format:"%Y-%m-%d %H:%M:%S"}" required class="form-control" id="startDate">
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                    </div>
+                                {/form_field}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">{intl l='OK' d='adminlogpurge.bo.default'}</button>
+                        </form>
+                    {/form}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="javascript-initialization"}
+    {javascripts file='assets/js/moment-with-locales.min.js'}
+        <script src="{$asset_url}"></script>
+    {/javascripts}
+
+    {javascripts file='assets/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js'}
+        <script src="{$asset_url}"></script>
+    {/javascripts}
+
+    <script>
+        (function($) {
+            {$langcode = {lang attr="code"}|substr:0:2}
+
+            $('#startDate').datetimepicker({
+                locale: "{$langcode}",
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+        })(jQuery);
+    </script>
+{/block}
